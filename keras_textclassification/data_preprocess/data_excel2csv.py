@@ -13,7 +13,24 @@ import numpy as np
 import json
 import os
 
+def excel2csv():
+    data = pd.read_excel(os.path.dirname(path_multi_label_train)+'/01-anhui.xlsx')
+    labels = []
+    trains = ['label|,|ques']
+    print(data.values)
 
-data = pd.read_excel(os.path.dirname(path_multi_label_train)+'/01-anhui.xlsx')
 
-print('list', data,columns)
+
+    # 生成 label 文件
+    with open(path_multi_label_valid) as f_label:
+        for line in labels:
+            labels.write(line + '\n')
+        f_label.close()
+
+    # 生成 train.csv 文件
+    with open(path_multi_label_train) as f_train:
+        for line in trains:
+            f_train.write(line + '\n')
+        f_train.close()
+
+    return None
