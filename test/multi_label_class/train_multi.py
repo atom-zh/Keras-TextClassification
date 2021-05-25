@@ -13,8 +13,14 @@ project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
+
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_byte_multi_news_train, path_byte_multi_news_valid
+# from keras_textclassification.conf.path_config import path_byte_multi_news_train, path_byte_multi_news_valid
+from keras_textclassification.conf.path_config import path_multi_label_train, path_multi_label_valid
+
+# 数据转换 excel ->  csv
+from keras_textclassification.data_preprocess.data_excel2csv import excel2csv
+
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, delete_file
 # 模型图
@@ -33,7 +39,7 @@ def train(hyper_parameters=None, rate=1.0):
         'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
         'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.66, #gpu使用率
-        'model': {'label': 1070,  # 类别数
+        'model': {'label': 84,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
@@ -55,8 +61,8 @@ def train(hyper_parameters=None, rate=1.0):
         'embedding': {'layer_indexes': [13], # bert取的层数
                       # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                         },
-        'data':{'train_data': path_byte_multi_news_train,  # 训练数据
-                'val_data': path_byte_multi_news_valid,    # 验证数据
+        'data':{'train_data': path_multi_label_train,  # 训练数据
+                'val_data': path_multi_label_valid,    # 验证数据
                 },
     }
 
@@ -84,4 +90,5 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
+    # excel2csv()
     train(rate=1)
