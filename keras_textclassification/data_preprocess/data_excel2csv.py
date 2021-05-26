@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import json
 import os
+import re
 
 def removePunctuation(content):
     """
@@ -28,16 +29,30 @@ def excel2csv():
     labels = []
     trains = ['label|,|ques']
     data = pd.read_excel(os.path.dirname(path_multi_label_train)+'/01-anhui.xlsx')
-    s_list = data.tolist()
-    print(data.values)
-    for line in s_list:
-        print(line)
-
+    data = np.array(data)
+    data = data.tolist()
+    for s_list in data:
+        label_tmp = removePunctuation(s_list[5])
+        if ' ' in label_tmp:
+            train_tmp = []
+            label_tmp = label_tmp.split(' ')
+            for i in label_tmp:
+                label = removePunctuation(s_list[4]) + '/' + removePunctuation(i)
+                labels.append(label)
+                train_tmp.append(label)
+            train = ','.join(train_tmp) + '|,|' + removePunctuation(s_list[3])
+            trains.append(train)
+        else:
+            label = removePunctuation(s_list[4]) + '/' + removePunctuation(s_list[5])
+            labels.append(label)
+            trains.append(label + '|,|' + removePunctuation(s_list[3]))
 
     # 生成 label 文件
-    with open(path_multi_label_valid, 'w', encoding='utf-8') as f_label:
+    with open(path_multi_label_labels, 'w', encoding='utf-8') as f_label:
+        labels = list(set(labels))
+        labels.sort(reverse=False)
         for line in labels:
-            labels.write(line + '\n')
+            f_label.write(line + '\n')
         f_label.close()
 
     # 生成 train.csv 文件
