@@ -9,6 +9,7 @@
 from setuptools import find_packages, setup
 import pathlib
 import codecs
+import os
 
 
 # Package meta-data.
@@ -19,9 +20,12 @@ EMAIL = '1903865025@qq.com'
 AUTHOR = 'yongzhuo'
 LICENSE = 'MIT'
 
-with codecs.open('E:/ai/code/Keras-TextClassification/README.md', 'r', 'utf8') as reader:
+code_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+code_path = code_path.replace('\\', '/') + '/Keras-TextClassification'
+
+with codecs.open(code_path + '/README.md', 'r', 'utf8') as reader:
     long_description = reader.read()
-with codecs.open('E:/ai/code/Keras-TextClassification/requirements.txt', 'r', 'utf8') as reader:
+with codecs.open(code_path + '/requirements.txt', 'r', 'utf8') as reader:
     install_requires = list(map(lambda x: x.strip(), reader.readlines()))
 
 setup(name=NAME,
