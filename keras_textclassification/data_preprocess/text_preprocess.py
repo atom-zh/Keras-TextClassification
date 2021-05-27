@@ -369,8 +369,8 @@ class PreprocessTextMulti:
             ques, label = ques[indexs].tolist(), label[indexs].tolist()
 
         if not os.path.exists(self.path_fast_text_model_l2i_i2l):
-            from keras_textclassification.conf.path_config import path_byte_multi_news_label
-            byte_multi_news_label = txt_read(path_byte_multi_news_label)
+            from keras_textclassification.conf.path_config import path_label
+            byte_multi_news_label = txt_read(path_label)
             byte_multi_news_label = [i.strip().upper() for i in byte_multi_news_label]
 
             label_set = set(byte_multi_news_label)

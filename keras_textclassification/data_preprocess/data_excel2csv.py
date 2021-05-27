@@ -6,7 +6,7 @@
 
 from keras_textclassification.data_preprocess.text_preprocess import load_json, save_json, txt_read
 from keras_textclassification.conf.path_config import path_model_dir
-from keras_textclassification.conf.path_config import path_multi_label_train, path_multi_label_valid, path_multi_label_labels, path_root
+from keras_textclassification.conf.path_config import path_train, path_valid, path_label, path_root
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
@@ -48,7 +48,7 @@ def excel2csv():
             trains.append(label + '|,|' + removePunctuation(s_list[3]))
 
     # 生成 label 文件
-    with open(path_multi_label_labels, 'w', encoding='utf-8') as f_label:
+    with open(path_label, 'w', encoding='utf-8') as f_label:
         labels = list(set(labels))
         labels.sort(reverse=False)
         for line in labels:
@@ -56,7 +56,7 @@ def excel2csv():
         f_label.close()
 
     # 生成 train.csv 文件
-    with open(path_multi_label_train, 'w', encoding='utf-8') as f_train:
+    with open(path_train, 'w', encoding='utf-8') as f_train:
         for line in trains:
             f_train.write(line + '\n')
         f_train.close()

@@ -15,8 +15,7 @@ sys.path.append(project_path)
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 
 # 训练验证数据地址
-# from keras_textclassification.conf.path_config import path_byte_multi_news_train, path_byte_multi_news_valid
-from keras_textclassification.conf.path_config import path_multi_label_train, path_multi_label_valid
+from keras_textclassification.conf.path_config import path_train, path_valid
 
 # 数据转换 excel ->  csv
 from keras_textclassification.data_preprocess.data_excel2csv import excel2csv
@@ -61,8 +60,8 @@ def train(hyper_parameters=None, rate=1.0):
         'embedding': {'layer_indexes': [13], # bert取的层数
                       # 'corpus_path': '',     # embedding预训练数据地址,不配则会默认取conf里边默认的地址, keras-bert可以加载谷歌版bert,百度版ernie(需转换，https://github.com/ArthurRizar/tensorflow_ernie),哈工大版bert-wwm(tf框架，https://github.com/ymcui/Chinese-BERT-wwm)
                         },
-        'data':{'train_data': path_multi_label_train,  # 训练数据
-                'val_data': path_multi_label_valid,    # 验证数据
+        'data':{'train_data': path_train,  # 训练数据
+                'val_data': path_valid,    # 验证数据
                 },
     }
 
@@ -90,5 +89,5 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    # excel2csv()
+    #excel2csv()
     train(rate=1)
