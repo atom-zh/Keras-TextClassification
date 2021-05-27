@@ -33,6 +33,16 @@ path_sim_webank_train = path_root + '/data/sim_webank/train.csv'
 path_sim_webank_valid = path_root + '/data/sim_webank/valid.csv'
 path_sim_webank_test = path_root + '/data/sim_webank/test.csv'
 
+# classfiy multi labels 2021
+path_multi_label_train = path_root + '/data/multi_label/train.csv'
+path_multi_label_valid = path_root + '/data/multi_label/valid.csv'
+path_multi_label_labels = path_root + '/data/multi_label/labels.csv'
+
+# 路径抽象层
+path_train = path_multi_label_train
+path_valid = path_multi_label_valid
+path_label = path_multi_label_labels
+
 # fast_text config
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"

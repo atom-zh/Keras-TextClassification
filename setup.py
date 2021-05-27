@@ -19,9 +19,9 @@ EMAIL = '1903865025@qq.com'
 AUTHOR = 'yongzhuo'
 LICENSE = 'MIT'
 
-with codecs.open('README.md', 'r', 'utf8') as reader:
+with codecs.open('E:/ai/code/Keras-TextClassification/README.md', 'r', 'utf8') as reader:
     long_description = reader.read()
-with codecs.open('requirements.txt', 'r', 'utf8') as reader:
+with codecs.open('E:/ai/code/Keras-TextClassification/requirements.txt', 'r', 'utf8') as reader:
     install_requires = list(map(lambda x: x.strip(), reader.readlines()))
 
 setup(name=NAME,

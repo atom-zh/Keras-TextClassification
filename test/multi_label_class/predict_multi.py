@@ -14,7 +14,7 @@ sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_byte_multi_news_valid, path_byte_multi_news_train
+from keras_textclassification.conf.path_config import path_valid, path_train
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, read_and_process, load_json
 # 模型图
