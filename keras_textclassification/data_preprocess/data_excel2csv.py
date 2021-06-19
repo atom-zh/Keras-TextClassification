@@ -25,11 +25,13 @@ class preprocess_excel_data:
         """
         文本去标点
         """
+        #content.decode('gbk', 'ignore').encode('utf-8')
         punctuation = r"~!@#$%^&*()_+`{}|\[\]\:\";\-\\\='<>?,.，。、《》？；：‘""“”{【】}|、！@#￥%……&*（）——+=-"
         content = re.sub(r'[{}]+'.format(punctuation), '', content)
 
         if content.startswith(' ') or content.endswith(' '):
             re.sub(r"^(\s+)|(\s+)$", "", content)
+
         return content.strip()
 
     def list_all_files(self, rootdir):
@@ -60,30 +62,39 @@ class preprocess_excel_data:
                 data += np.array(pd.read_excel(file)).tolist()
 
         for s_list in data:
-            print(s_list)
-            label_tmp = self.removePunctuation(str(s_list[5]))
+            #print(s_list)
+            raw_label = str(s_list[5])
+            raw_title = str(s_list[3])
+            cov_label = self.removePunctuation(raw_label)
+            cov_title = self.removePunctuation(raw_title)
+
+            # 跳过无效数据
+            if 'nan' in raw_label or 'nan' in raw_title:
+                continue
+
+            label_tmp = cov_label.replace('/', ' ')
+            #label_tmp = re.sub(r'\ +', '', label_tmp)
+
+            # 将 label 和 title 都加入语料库
             self.corpus.append(list(label_tmp.split(' ')))
-            self.corpus.append(list(jieba.cut(self.removePunctuation(s_list[3]), cut_all=False, HMM=False)))
+            self.corpus.append(list(jieba.cut(cov_title, cut_all=False, HMM=False)))
+
+            # 处理多标签的情况
             if ' ' in label_tmp:
+                label_tmp = label_tmp.split(' ')
                 train_tmp = []
-                label_tmp = label_tmp.split('/')
                 for i in label_tmp:
-                    #label = self.removePunctuation(s_list[4]) + '/' + self.removePunctuation(i)
-                    label = self.removePunctuation(i)
-                    labels.append(label)
-                    train_tmp.append(label)
-                train = ','.join(train_tmp) + '|,|' + self.removePunctuation(s_list[3])
-                trains.append(train)
+                    labels.append(i)
+                    train_tmp.append(i)
+                trains.append(','.join(train_tmp) + '|,|' + cov_title)
             else:
-                #label = self.removePunctuation(s_list[4]) + '/' + self.removePunctuation(s_list[5])
-                label = self.removePunctuation(str(s_list[5]))
-                labels.append(label)
-                trains.append(label + '|,|' + self.removePunctuation(s_list[3]))
+                labels.append(cov_label)
+                trains.append(cov_label + '|,|' + cov_title)
 
         # 生成 label 文件
         with open(path_label, 'w', encoding='utf-8') as f_label:
-            labels = list(set(labels))
-            labels.sort(reverse=False)
+            labels = list(set(labels)) #去重
+            labels.sort(reverse=False) #排序
             for line in labels:
                 f_label.write(line + '\n')
             f_label.close()
@@ -96,7 +107,8 @@ class preprocess_excel_data:
         f_train.write('label|,|ques' + '\n')
         for i in range(len(trains)):
             print(trains[i])
-            if i%5 == 0:
+            # 拆分训练集和验证集
+            if i%7 == 0:
                 f_valid.write(trains[i] + '\n')
             else:
                 f_train.write(trains[i] + '\n')
