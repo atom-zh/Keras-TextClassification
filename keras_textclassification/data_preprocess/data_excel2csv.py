@@ -10,7 +10,7 @@ from keras_textclassification.conf.path_config import path_train, path_valid, pa
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import json
+import random
 import jieba
 import word2vec
 import os
@@ -34,8 +34,8 @@ class preprocess_excel_data:
 
     def excel2csv(self):
         labels = []
-        trains = ['label|,|ques']
-        data = pd.read_excel(os.path.dirname(path_train)+'/001-anhui.xlsx')
+        trains = []
+        data = pd.read_excel(os.path.dirname(path_train)+'/101-anhui.xlsx')
         data = np.array(data)
         data = data.tolist()
         for s_list in data:
@@ -67,11 +67,20 @@ class preprocess_excel_data:
                 f_label.write(line + '\n')
             f_label.close()
 
-        # 生成 train.csv 文件
-        with open(path_train, 'w', encoding='utf-8') as f_train:
-            for line in trains:
-                f_train.write(line + '\n')
-            f_train.close()
+        # 生成 train.csv vaild.csv文件
+        f_train = open(path_train, 'w', encoding='utf-8')
+        f_valid = open(path_valid, 'w', encoding='utf-8')
+        random.shuffle(trains)
+        f_valid.write('label|,|ques' + '\n')
+        f_train.write('label|,|ques' + '\n')
+        for i in range(len(trains)):
+            print(trains[i])
+            if i%5 == 0:
+                f_valid.write(trains[i] + '\n')
+            else:
+                f_train.write(trains[i] + '\n')
+        f_valid.close()
+        f_train.close()
 
     def gen_vec(self):
         # 生成 word2vec 预训练 文件
