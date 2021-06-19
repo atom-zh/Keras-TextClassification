@@ -16,8 +16,9 @@ path_embedding_random_word = path_root + '/data/embeddings/term_word.txt'
 path_embedding_bert = path_root + '/data/embeddings/chinese_L-12_H-768_A-12/'
 path_embedding_xlnet = path_root + '/data/embeddings/chinese_xlnet_mid_L-24_H-768_A-12/'
 path_embedding_albert = path_root + '/data/embeddings/albert_base_zh'
-path_embedding_vector_word2vec_char = path_root + '/data/embeddings/w2v_model_wiki_char.vec'
-path_embedding_vector_word2vec_word = path_root + '/data/embeddings/w2v_model_merge_short.vec'
+path_embedding_vector_word2vec_char = path_root + '/data/embeddings/multi_label_char.vec'
+path_embedding_vector_word2vec_word = path_root + '/data/embeddings/multi_label_word.vec'
+path_embedding_vector_word2vec_word_bin = path_root + '/data/embeddings/multi_label_word.bin'
 
 # classify data of baidu qa 2019
 path_baidu_qa_2019_train = path_root + '/data/baidu_qa_2019/baike_qa_train.csv'
