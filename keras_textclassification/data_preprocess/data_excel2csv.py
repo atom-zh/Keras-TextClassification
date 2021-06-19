@@ -25,8 +25,7 @@ class preprocess_excel_data:
         """
         文本去标点
         """
-        #content.decode('gbk', 'ignore').encode('utf-8')
-        punctuation = r"~!@#$%^&*()_+`{}|\[\]\:\";\-\\\='<>?,.，。、《》？；：‘""“”{【】}|、！@#￥%……&*（）——+=-"
+        punctuation = r"~!@#$%^&*()_+`{}|\[\]\:\";\-\\\='<>?,.，。、《》？；：‘""“”{【】}|、！@#￥%……&*（）——+=- "
         content = re.sub(r'[{}]+'.format(punctuation), '', content)
 
         if content.startswith(' ') or content.endswith(' '):
