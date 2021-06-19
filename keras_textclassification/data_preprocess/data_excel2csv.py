@@ -25,27 +25,48 @@ class preprocess_excel_data:
         """
         文本去标点
         """
-        punctuation = r"~!@#$%^&*()_+`{}|\[\]\:\";\-\\\='<>?,.，。、《》？；：‘“{【】}|、！@#￥%……&*（）——+=-"
+        punctuation = r"~!@#$%^&*()_+`{}|\[\]\:\";\-\\\='<>?,.，。、《》？；：‘""“”{【】}|、！@#￥%……&*（）——+=-"
         content = re.sub(r'[{}]+'.format(punctuation), '', content)
 
         if content.startswith(' ') or content.endswith(' '):
             re.sub(r"^(\s+)|(\s+)$", "", content)
         return content.strip()
 
+    def list_all_files(self, rootdir):
+        import os
+        _files = []
+        # 列出文件夹下所有的目录与文件
+        list_file = os.listdir(rootdir)
+
+        for i in range(0, len(list_file)):
+            # 构造路径
+            path = os.path.join(rootdir, list_file[i])
+            # 判断路径是否是一个文件目录或者文件
+            # 如果是文件目录，继续递归
+            if os.path.isdir(path):
+                _files.extend(self.list_all_files(path))
+            if os.path.isfile(path):
+                _files.append(path)
+        return _files
+
     def excel2csv(self):
         labels = []
         trains = []
-        data = pd.read_excel(os.path.dirname(path_train)+'/101-anhui.xlsx')
-        data = np.array(data)
-        data = data.tolist()
+        data = []
+        files = self.list_all_files(os.path.dirname(path_train))
+        for file in files:
+            if file.endswith('.xlsx'):
+                print('Will read execel file：' + file)
+                data += np.array(pd.read_excel(file)).tolist()
+
         for s_list in data:
-            #print(s_list)
-            label_tmp = self.removePunctuation(s_list[5])
+            print(s_list)
+            label_tmp = self.removePunctuation(str(s_list[5]))
             self.corpus.append(list(label_tmp.split(' ')))
             self.corpus.append(list(jieba.cut(self.removePunctuation(s_list[3]), cut_all=False, HMM=False)))
             if ' ' in label_tmp:
                 train_tmp = []
-                label_tmp = label_tmp.split(' ')
+                label_tmp = label_tmp.split('/')
                 for i in label_tmp:
                     #label = self.removePunctuation(s_list[4]) + '/' + self.removePunctuation(i)
                     label = self.removePunctuation(i)
@@ -55,7 +76,7 @@ class preprocess_excel_data:
                 trains.append(train)
             else:
                 #label = self.removePunctuation(s_list[4]) + '/' + self.removePunctuation(s_list[5])
-                label = self.removePunctuation(s_list[5])
+                label = self.removePunctuation(str(s_list[5]))
                 labels.append(label)
                 trains.append(label + '|,|' + self.removePunctuation(s_list[3]))
 
