@@ -15,7 +15,7 @@ sys.path.append(project_path)
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
 
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_train, path_valid
+from keras_textclassification.conf.path_config import path_train, path_valid, path_tests
 
 # 数据转换 excel ->  csv
 from keras_textclassification.data_preprocess.data_excel2csv import preprocess_excel_data as pre_pro
@@ -62,6 +62,7 @@ def train(hyper_parameters=None, rate=1.0):
                         },
         'data':{'train_data': path_train,  # 训练数据
                 'val_data': path_valid,    # 验证数据
+                'test_data': path_tests,  # 测试数据
                 },
     }
 

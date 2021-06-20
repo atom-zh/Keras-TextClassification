@@ -18,6 +18,7 @@ import word2vec
 import os
 import re
 
+str_split = '|,|'
 
 class preprocess_excel_data:
     def __init__(self):
@@ -91,7 +92,7 @@ class preprocess_excel_data:
                 continue
             # 跳过 分类和标签 不匹配的数据
             if self.label_check(cov_category, cov_label) == False:
-                edata.append(str(s_list[0]) + ',' + cov_category + ',' + cov_label + ',' + cov_title)
+                edata.append(str(s_list[0]) + str_split + cov_category + str_split + cov_label + str_split + cov_title)
                 continue
 
             label_tmp = cov_label.replace('/', ' ')  # 去除字母标签分类的 ‘/’
@@ -108,10 +109,10 @@ class preprocess_excel_data:
                 for i in label_tmp:
                     labels.append(i)
                     train_tmp.append(i)
-                trains.append(','.join(train_tmp) + '|,|' + cov_title)
+                trains.append(','.join(train_tmp) + str_split + cov_title)
             else:
                 labels.append(cov_label)
-                trains.append(cov_label + '|,|' + cov_title)
+                trains.append(cov_label + str_split + cov_title)
 
         # 生成 label 文件
         with open(path_label, 'w', encoding='utf-8') as f_label:
@@ -126,9 +127,9 @@ class preprocess_excel_data:
         f_valid = open(path_valid, 'w', encoding='utf-8')
         f_tests = open(path_tests, 'w', encoding='utf-8')
         random.shuffle(trains)
-        f_valid.write('label|,|ques' + '\n')
-        f_train.write('label|,|ques' + '\n')
-        f_tests.write('label|,|ques' + '\n')
+        f_valid.write('label'+ str_split + 'ques' + '\n')
+        f_train.write('label'+ str_split + 'ques' + '\n')
+        f_tests.write('label'+ str_split + 'ques' + '\n')
         for i in range(len(trains)):
             print(trains[i])
             # 拆分训练集、验证集、测试集
