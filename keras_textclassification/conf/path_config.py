@@ -16,8 +16,9 @@ path_embedding_random_word = path_root + '/data/embeddings/term_word.txt'
 path_embedding_bert = path_root + '/data/embeddings/chinese_L-12_H-768_A-12/'
 path_embedding_xlnet = path_root + '/data/embeddings/chinese_xlnet_mid_L-24_H-768_A-12/'
 path_embedding_albert = path_root + '/data/embeddings/albert_base_zh'
-path_embedding_vector_word2vec_char = path_root + '/data/embeddings/w2v_model_wiki_char.vec'
-path_embedding_vector_word2vec_word = path_root + '/data/embeddings/w2v_model_merge_short.vec'
+path_embedding_vector_word2vec_char = path_root + '/data/embeddings/multi_label_char.vec'
+path_embedding_vector_word2vec_word = path_root + '/data/embeddings/multi_label_word.vec'
+path_embedding_vector_word2vec_word_bin = path_root + '/data/embeddings/multi_label_word.bin'
 
 # classify data of baidu qa 2019
 path_baidu_qa_2019_train = path_root + '/data/baidu_qa_2019/baike_qa_train.csv'
@@ -37,11 +38,14 @@ path_sim_webank_test = path_root + '/data/sim_webank/test.csv'
 path_multi_label_train = path_root + '/data/multi_label/train.csv'
 path_multi_label_valid = path_root + '/data/multi_label/valid.csv'
 path_multi_label_labels = path_root + '/data/multi_label/labels.csv'
+path_multi_label_tests = path_root + '/data/multi_label/tests.csv'
 
 # 路径抽象层
+path_label = path_multi_label_labels
 path_train = path_multi_label_train
 path_valid = path_multi_label_valid
-path_label = path_multi_label_labels
+path_tests = path_multi_label_tests
+path_edata = path_root + "/data/model/fast_text/logs/error_data.csv"
 
 # fast_text config
 # 模型目录
@@ -52,3 +56,5 @@ path_model = path_root + '/data/model/fast_text/model_fast_text.h5'
 path_hyper_parameters =  path_root + '/data/model/fast_text/hyper_parameters.json'
 # embedding微调保存地址
 path_fineture = path_root + "/data/model/fast_text/embedding_trainable.h5"
+# 保持 分类-标签 索引
+path_category = path_root + '/data/multi_label/category2labels.json'

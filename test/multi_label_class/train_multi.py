@@ -18,7 +18,7 @@ from keras_textclassification.conf.path_config import path_model, path_fineture,
 from keras_textclassification.conf.path_config import path_train, path_valid
 
 # 数据转换 excel ->  csv
-from keras_textclassification.data_preprocess.data_excel2csv import excel2csv
+from keras_textclassification.data_preprocess.data_excel2csv import preprocess_excel_data as pre_pro
 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, delete_file
@@ -35,10 +35,10 @@ def train(hyper_parameters=None, rate=1.0):
         'embed_size': 300,  # 字/词向量维度, bert取768, word取300, char可以更小些
         'vocab_size': 20000,  # 这里随便填的，会根据代码里修改
         'trainable': True,  # embedding是静态的还是动态的, 即控制可不可以微调
-        'level_type': 'char',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
-        'embedding_type': 'random',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
-        'gpu_memory_fraction': 0.66, #gpu使用率
-        'model': {'label': 84,  # 类别数
+        'level_type': 'word',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
+        'embedding_type': 'word2vec',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
+        'gpu_memory_fraction': 0.86, #gpu使用率
+        'model': {'label': 51,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
@@ -89,5 +89,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    #excel2csv()
+    pre = pre_pro() # 实例化
+    pre.excel2csv() # 数据预处理， excel文件转为csv， 拆分训练集和验证集
+    pre.gen_vec()   # 根据语料库，生成词向量
     train(rate=1)
