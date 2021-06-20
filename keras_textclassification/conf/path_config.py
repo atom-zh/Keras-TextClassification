@@ -38,11 +38,14 @@ path_sim_webank_test = path_root + '/data/sim_webank/test.csv'
 path_multi_label_train = path_root + '/data/multi_label/train.csv'
 path_multi_label_valid = path_root + '/data/multi_label/valid.csv'
 path_multi_label_labels = path_root + '/data/multi_label/labels.csv'
+path_multi_label_tests = path_root + '/data/multi_label/tests.csv'
 
 # 路径抽象层
+path_label = path_multi_label_labels
 path_train = path_multi_label_train
 path_valid = path_multi_label_valid
-path_label = path_multi_label_labels
+path_tests = path_multi_label_tests
+path_edata = path_root + "/data/model/fast_text/logs/error_data.csv"
 
 # fast_text config
 # 模型目录
@@ -53,3 +56,5 @@ path_model = path_root + '/data/model/fast_text/model_fast_text.h5'
 path_hyper_parameters =  path_root + '/data/model/fast_text/hyper_parameters.json'
 # embedding微调保存地址
 path_fineture = path_root + "/data/model/fast_text/embedding_trainable.h5"
+# 保持 分类-标签 索引
+path_category = path_root + '/data/multi_label/category2labels.json'

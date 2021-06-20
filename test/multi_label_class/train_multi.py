@@ -38,7 +38,7 @@ def train(hyper_parameters=None, rate=1.0):
         'level_type': 'word',  # 级别, 最小单元, 字/词, 填 'char' or 'word', 注意:word2vec模式下训练语料要首先切好
         'embedding_type': 'word2vec',  # 级别, 嵌入类型, 还可以填'xlnet'、'random'、 'bert'、 'albert' or 'word2vec"
         'gpu_memory_fraction': 0.86, #gpu使用率
-        'model': {'label': 83,  # 类别数
+        'model': {'label': 51,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
                   'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
@@ -89,7 +89,7 @@ def train(hyper_parameters=None, rate=1.0):
 
 
 if __name__=="__main__":
-    pre = pre_pro()
-    pre.excel2csv()
-    pre.gen_vec()
+    pre = pre_pro() # 实例化
+    pre.excel2csv() # 数据预处理， excel文件转为csv， 拆分训练集和验证集
+    pre.gen_vec()   # 根据语料库，生成词向量
     train(rate=1)
