@@ -21,6 +21,7 @@ from keras_textclassification.data_preprocess.text_preprocess import PreprocessT
 from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
 # 模型评估
 from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
 # 计算时间
 import time
 import numpy as np
@@ -64,9 +65,23 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     #index_pred = [pt.l2i_i2l['l2i'][i] for i in y_pred]
     #target_names = [pt.l2i_i2l['i2l'][str(i)] for i in list(set((index_pred + index_y)))]
     # 评估
-    report_predict = classification_report(index_y, y_pred, digits=9)
+    H = classification_report(index_y, y_pred, digits=9)
     print(report_predict)
     print("耗时:" + str(time.time() - time_start))
+
+    N = np.arange(0, hyper_parameters['model']['epochs'])
+    plt.style.use("ggplot")
+    plt.figure()
+    plt.plot(N, H.histroy['loss', label = 'train_loss')
+    plt.plot(N, H.histroy['val_loss', label = 'val_loss')
+    plt.plot(N, H.histroy['acc', label = 'train_loss')
+    plt.plot(N, H.histroy['val_acc', label = 'simple_loss')
+    plt.title("Training loss and Accuracy (Multi Lable)")
+    plt.xlabel("Epoch #")
+    plt.ylabel("Loss/Accuracy")
+    plt.legend()
+    plt.savefig(./1)
+
 
 def pred_input(path_hyper_parameter=path_hyper_parameters):
     # 输入预测
