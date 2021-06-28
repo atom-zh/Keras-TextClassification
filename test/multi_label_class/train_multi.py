@@ -9,6 +9,7 @@
 import pathlib
 import sys
 import os
+import numpy as np
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
@@ -24,6 +25,7 @@ from keras_textclassification.data_preprocess.data_excel2csv import preprocess_e
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, delete_file
 # 模型图
 from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
+import matplotlib.pyplot as plt
 # 计算时间
 import time
 
@@ -40,17 +42,17 @@ def train(hyper_parameters=None, rate=1.0):
         'gpu_memory_fraction': 0.86, #gpu使用率
         'model': {'label': 51,  # 类别数
                   'batch_size': 32,  # 批处理尺寸, 感觉原则上越大越好,尤其是样本不均衡的时候, batch_size设置影响比较大
-                  'dropout': 0.5,  # 随机失活, 概率
+                  'dropout': 0.1,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
-                  'epochs': 20,  # 训练最大轮次
-                  'patience': 3, # 早停,2-3就好
-                  'lr': 1e-3,  # 学习率, bert取5e-5, 其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
+                  'epochs': 200,  # 训练最大轮次
+                  'patience': 10, # 早停,2-3就好
+                  'lr': 1e-4,  # 学习率, bert取5e-5, 其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
                   'activate_classify': 'sigmoid', # 'sigmoid',  # 最后一个layer, 即分类激活函数
-                  'loss': 'binary_crossentropy',  # 损失函数, 可能有问题, 可以自己定义
-                  'metrics': 'top_k_categorical_accuracy',  # 1070个类, 太多了先用topk,  这里数据k设置为最大:33
-                  # 'metrics': 'categorical_accuracy',  # 保存更好模型的评价标准
+                  'loss': 'categorical_crossentropy',  # 损失函数, 可能有问题, 可以自己定义 categorical_crossentropy
+                  #'metrics': 'top_k_categorical_accuracy',  # 1070个类, 太多了先用topk,  这里数据k设置为最大:33
+                  'metrics': 'categorical_accuracy',  # 保存更好模型的评价标准
                   'is_training': True,  # 训练后者是测试模型
                   'model_path': path_model,
                   # 模型地址, loss降低则保存的依据, save_best_only=True, save_weights_only=True
@@ -85,12 +87,24 @@ def train(hyper_parameters=None, rate=1.0):
     print("data propress ok!")
     print(len(y_train))
     # 训练
-    graph.fit(x_train, y_train, x_val, y_val)
+    H = graph.fit(x_train, y_train, x_val, y_val)
     print("耗时:" + str(time.time()-time_start))
 
+    N = np.arange(0, H.epoch.__len__())
+    plt.style.use("ggplot")
+    plt.figure()
+    #plt.plot(N, H.history['loss'], label = 'train_loss')
+    #plt.plot(N, H.history['val_loss'], label = 'valid_loss')
+    plt.plot(N, H.history['acc'], label = 'train_acc')
+    plt.plot(N, H.history['val_acc'], label = 'valid_acc')
+    plt.title("Training loss and Accuracy (Multi Lable)")
+    plt.xlabel("Epoch #")
+    plt.ylabel("Loss/Accuracy")
+    plt.legend()
+    plt.savefig('./1')
 
 if __name__=="__main__":
-    pre = pre_pro() # 实例化
-    pre.excel2csv() # 数据预处理， excel文件转为csv， 拆分训练集和验证集
-    pre.gen_vec()   # 根据语料库，生成词向量
+    #pre = pre_pro() # 实例化
+    #pre.excel2csv() # 数据预处理， excel文件转为csv， 拆分训练集和验证集
+    #pre.gen_vec()   # 根据语料库，生成词向量
     train(rate=1)
