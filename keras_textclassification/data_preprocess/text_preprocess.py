@@ -391,7 +391,6 @@ class PreprocessTextMulti:
             l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
             len_label_set = len(l2i_i2l['l2i'])
 
-
         x = []
         print("ques to index start!")
         for i in tqdm(range(len_ql)):
@@ -435,7 +434,6 @@ class PreprocessTextMulti:
         else:
             x_, y_ = np.array(x), np.array(label_multi_list)
             return x_, y_
-
 
 class PreprocessSim:
     """
