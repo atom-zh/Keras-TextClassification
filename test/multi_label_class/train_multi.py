@@ -13,7 +13,7 @@ import numpy as np
 project_path = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
 sys.path.append(project_path)
 # 地址
-from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
+from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters, path_root
 
 # 训练验证数据地址
 from keras_textclassification.conf.path_config import path_train, path_valid, path_tests
@@ -46,11 +46,11 @@ def train(hyper_parameters=None, rate=1.0):
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
                   'epochs': 200,  # 训练最大轮次
-                  'patience': 10, # 早停,2-3就好
+                  'patience': 5, # 早停,2-3就好
                   'lr': 1e-4,  # 学习率, bert取5e-5, 其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
                   'activate_classify': 'sigmoid', # 'sigmoid',  # 最后一个layer, 即分类激活函数
-                  'loss': 'categorical_crossentropy',  # 损失函数, 可能有问题, 可以自己定义 categorical_crossentropy
+                  'loss': 'binary_crossentropy',  # 损失函数, 可能有问题, 可以自己定义 categorical_crossentropy
                   #'metrics': 'top_k_categorical_accuracy',  # 1070个类, 太多了先用topk,  这里数据k设置为最大:33
                   'metrics': 'categorical_accuracy',  # 保存更好模型的评价标准
                   'is_training': True,  # 训练后者是测试模型
@@ -90,18 +90,26 @@ def train(hyper_parameters=None, rate=1.0):
     H = graph.fit(x_train, y_train, x_val, y_val)
     print("耗时:" + str(time.time()-time_start))
 
+    # 准确率图形输出
     N = np.arange(0, H.epoch.__len__())
     plt.style.use("ggplot")
-    plt.figure()
-    #plt.plot(N, H.history['loss'], label = 'train_loss')
-    #plt.plot(N, H.history['val_loss'], label = 'valid_loss')
+    plt.figure(figsize=(12,5))
+    plt.subplot(1, 2, 1)
     plt.plot(N, H.history['acc'], label = 'train_acc')
     plt.plot(N, H.history['val_acc'], label = 'valid_acc')
-    plt.title("Training loss and Accuracy (Multi Lable)")
-    plt.xlabel("Epoch #")
-    plt.ylabel("Loss/Accuracy")
+    plt.title("Training Accuracy (Multi Labels)")
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
     plt.legend()
-    plt.savefig('./1')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(N, H.history['loss'], label = 'train_loss')
+    plt.plot(N, H.history['val_loss'], label = 'valid_loss')
+    plt.title("Training loss (Multi Labels)")
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.legend()
+    plt.savefig(path_root + '/../out/train_1')
 
 if __name__=="__main__":
     #pre = pre_pro() # 实例化

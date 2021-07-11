@@ -8,7 +8,7 @@
 from keras.layers import Reshape, Concatenate, Conv2D, MaxPool2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Model
-
+from keras_textclassification.keras_layers.attention_self import AttentionSelf
 from keras_textclassification.base.graph import graph
 
 
@@ -28,6 +28,7 @@ class TextCNNGraph(graph):
         """
         super().create_model(hyper_parameters)
         embedding = self.word_embedding.output
+        #embedding = AttentionSelf(self.word_embedding.embed_size)(embedding)
         embedding_reshape = Reshape((self.len_max, self.embed_size, 1))(embedding)
         # 提取n-gram特征和最大池化， 一般不用平均池化
         conv_pools = []
@@ -42,6 +43,7 @@ class TextCNNGraph(graph):
                                strides = (1, 1),
                                padding = 'valid',
                                )(conv)
+
             conv_pools.append(pooled)
         # 拼接
         x = Concatenate(axis=-1)(conv_pools)
