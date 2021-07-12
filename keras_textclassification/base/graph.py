@@ -5,7 +5,7 @@
 # @function :graph of base
 
 
-from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters
+from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters, path_root
 from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator, PreprocessSimGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras_textclassification.keras_layers.keras_lookahead import Lookahead
@@ -13,6 +13,8 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 from keras_textclassification.keras_layers.keras_radam import RAdam
 from keras.optimizers import Adam
 from keras import backend as K
+from keras.models import Model
+from keras.utils import plot_model
 
 import numpy as np
 import os
@@ -33,7 +35,7 @@ class graph:
         hyper_parameters_model = hyper_parameters['model']
         self.label = hyper_parameters_model.get('label', 2)  # 类型
         self.batch_size = hyper_parameters_model.get('batch_size', 32)  # 批向量
-        self.filters = hyper_parameters_model.get('filters', [3, 4, 5])  # 卷积核大小
+        self.filters = hyper_parameters_model.get('filters', [2, 3, 4])  # 卷积核大小
         self.filters_num = hyper_parameters_model.get('filters_num', 300)  # 核数
         self.channel_size = hyper_parameters_model.get('channel_size', 1)  # 通道数
         self.dropout = hyper_parameters_model.get('dropout', 0.5)          # dropout层系数，舍弃
@@ -91,7 +93,7 @@ class graph:
         if os.path.exists(self.path_fineture) and self.trainable:
             self.word_embedding.model.load_weights(self.path_fineture)
             print("load path_fineture ok!")
-        self.model = None
+        self.model = Model
 
     def callback(self):
         """
@@ -144,13 +146,15 @@ class graph:
         #     print("load_weights")
         #     self.model.load_weights(self.model_path)
         # 训练模型
-        self.model.fit(x_train, y_train, batch_size=self.batch_size,
+        ret = self.model.fit(x_train, y_train, batch_size=self.batch_size,
                        epochs=self.epochs, validation_data=(x_dev, y_dev),
                        shuffle=True,
                        callbacks=self.callback())
         # 保存embedding, 动态的
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
+        plot_model(self.model, to_file=path_root + '/../out/model.png', show_shapes=True)
+        return ret
 
     def fit_generator(self, embed, rate=1):
         """
@@ -195,6 +199,7 @@ class graph:
         # 保存embedding, 动态的
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
+
 
     def fit_generator_sim(self, embed, rate=1):
         """

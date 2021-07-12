@@ -100,6 +100,8 @@ class preprocess_excel_data:
 
             # 将 label 和 title 都加入语料库
             self.corpus.append(list(label_tmp.split(' ')))
+            # jieba.suggest_freq('十八大', True)    #修改词频，使其不能分离
+            # jieba.load_userdict(file_name)       #添加自定义词典
             self.corpus.append(list(jieba.cut(cov_title, cut_all=False, HMM=False)))
 
             # 处理多标签的情况
@@ -159,6 +161,7 @@ class preprocess_excel_data:
             f_vec_bin.close()
         print(self.corpus)
 
+        # 嵌入参数： sg=> 0:CBOW 1:SKip-Gram
         word2vec.word2vec(path_embedding_random_word, path_embedding_vector_word2vec_word_bin, size=300, verbose=True)
         print("start to load vec file")
         model = word2vec.load(path_embedding_vector_word2vec_word_bin)

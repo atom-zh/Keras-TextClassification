@@ -45,7 +45,7 @@ path_label = path_multi_label_labels
 path_train = path_multi_label_train
 path_valid = path_multi_label_valid
 path_tests = path_multi_label_tests
-path_edata = path_root + "/data/model/fast_text/logs/error_data.csv"
+path_edata = path_root + "/../out/error_data.csv"
 
 # fast_text config
 # 模型目录
