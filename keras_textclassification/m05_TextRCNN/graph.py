@@ -17,6 +17,7 @@ from keras import backend as K
 from keras import regularizers
 
 from keras_textclassification.base.graph import graph
+from keras_textclassification.keras_layers.attention_dot import  Attention
 
 
 
@@ -56,8 +57,12 @@ class RCNNGraph(graph):
                                     kernel_regularizer=regularizers.l2(0.32 * 0.1),
                                     recurrent_regularizer=regularizers.l2(0.32),
                                     go_backwards = False)(embedding_output)
+
+
+        attention_out = Attention()(embedding_output) # add attention
         # 拼接
-        x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
+        x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse, attention_out])
+        #x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
 
         ####使用多个卷积核##################################################
         x_feb = Dropout(self.dropout)(x_feb)

@@ -153,6 +153,7 @@ class graph:
         # 保存embedding, 动态的
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
+        # 保存模型架构图
         plot_model(self.model, to_file=path_root + '/../out/model.png', show_shapes=True)
         return ret
 

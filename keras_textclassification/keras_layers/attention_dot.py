@@ -12,7 +12,7 @@ from keras import backend as K
 import tensorflow as tf
 
 
-class AttentionDot(Layer):
+class Attention(Layer):
     def __init__(self, **kwargs):
         super().__init__(** kwargs)
 

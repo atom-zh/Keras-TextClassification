@@ -22,7 +22,7 @@ class PreprocessGenerator:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
@@ -143,7 +143,7 @@ class PreprocessSimGenerator:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 

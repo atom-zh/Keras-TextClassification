@@ -10,7 +10,7 @@ from keras_textclassification.base.graph import graph
 from keras.layers import Dense, Dropout, Concatenate
 from keras.models import Model
 
-from keras_textclassification.keras_layers.attention_dot import AttentionDot, CVG_Layer
+from keras_textclassification.keras_layers.attention_dot import Attention, CVG_Layer
 from keras_textclassification.keras_layers.attention_self import AttentionSelf
 
 
@@ -32,7 +32,7 @@ class LEAMGraph(graph):
         super().create_model(hyper_parameters)
         # 构建网络层 sentence
         # self.word_embedding_attention = AttentionSelf(self.embed_size)(self.word_embedding.output)
-        self.word_embedding_attention = AttentionDot()(self.word_embedding.output)
+        self.word_embedding_attention = Attention()(self.word_embedding.output)
 
         # 1.C*V/G;  2.relu(text-cnn);  3.softmax;  4.β * V
         pools = []

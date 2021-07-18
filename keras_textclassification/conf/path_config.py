@@ -11,6 +11,7 @@ path_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 path_root = path_root.replace('\\', '/')
 
 # path of embedding
+path_embedding_user_dict = path_root + '/data/embeddings/user_dict.txt'
 path_embedding_random_char = path_root + '/data/embeddings/term_char.txt'
 path_embedding_random_word = path_root + '/data/embeddings/term_word.txt'
 path_embedding_bert = path_root + '/data/embeddings/chinese_L-12_H-768_A-12/'
@@ -18,6 +19,7 @@ path_embedding_xlnet = path_root + '/data/embeddings/chinese_xlnet_mid_L-24_H-76
 path_embedding_albert = path_root + '/data/embeddings/albert_base_zh'
 path_embedding_vector_word2vec_char = path_root + '/data/embeddings/multi_label_char.vec'
 path_embedding_vector_word2vec_word = path_root + '/data/embeddings/multi_label_word.vec'
+path_embedding_vector_word2vec_char_bin = path_root + '/data/embeddings/multi_label_char.bin'
 path_embedding_vector_word2vec_word_bin = path_root + '/data/embeddings/multi_label_word.bin'
 
 # classify data of baidu qa 2019
@@ -58,3 +60,5 @@ path_hyper_parameters =  path_root + '/data/model/fast_text/hyper_parameters.jso
 path_fineture = path_root + "/data/model/fast_text/embedding_trainable.h5"
 # 保持 分类-标签 索引
 path_category = path_root + '/data/multi_label/category2labels.json'
+# l2i_i2l
+path_l2i_i2l = path_root + '/data/multi_label/l2i_i2l.json'

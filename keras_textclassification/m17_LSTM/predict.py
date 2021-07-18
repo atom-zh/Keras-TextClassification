@@ -14,16 +14,17 @@ sys.path.append(project_path)
 # 地址
 from keras_textclassification.conf.path_config import path_model_dir, path_hyper_parameters
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_valid
+from keras_textclassification.conf.path_config import path_valid, path_root
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, load_json, transform_multilabel_to_multihot
 # 模型图
-from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
+from keras_textclassification.m17_LSTM.graph import LSTMGraph as Graph
 # 模型评估
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_auc_score
 # 计算时间
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.0):
     # 测试集的准确率
@@ -65,64 +66,12 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     target_names = [pt.l2i_i2l['i2l'][str(i)] for i in range(51)]
     print(target_names)
     # 评估
-    report_predict = classification_report(index_y, y_pred, digits=9, target_names=target_names)
+    results = classification_report(index_y, y_pred, digits=9, target_names=target_names)
+    print(results)
 
-    print(report_predict)
     print("耗时:" + str(time.time() - time_start))
-
-def pred_input(path_hyper_parameter=path_hyper_parameters):
-    # 输入预测
-    # 加载超参数
-    hyper_parameters = load_json(path_hyper_parameter)
-    pt = PreprocessTextMulti(path_model_dir)
-    # 模式初始化和加载
-    graph = Graph(hyper_parameters)
-    graph.load_model()
-    ra_ed = graph.word_embedding
-
-    ques = '我要打王者荣耀'
-    # str to token
-    ques_embed = ra_ed.sentence2idx(ques)
-    if hyper_parameters['embedding_type'] in ['bert', 'albert']:
-        x_val_1 = np.array([ques_embed[0]])
-        x_val_2 = np.array([ques_embed[1]])
-        x_val = [x_val_1, x_val_2]
-    else:
-        x_val = ques_embed
-    # 预测
-    pred = graph.predict(x_val)
-    print(pred)
-    # 取id to label and pred
-    pre = pt.prereocess_idx(pred[0])
-    ls_nulti = []
-    for ls in pre[0]:
-        if ls[1] >= 0.5:
-            ls_nulti.append(ls)
-    print(pre[0])
-    print(ls_nulti)
-    while True:
-        print("请输入: ")
-        ques = input()
-        ques_embed = ra_ed.sentence2idx(ques)
-        print(ques_embed)
-        if hyper_parameters['embedding_type'] in ['bert', 'albert']:
-            x_val_1 = np.array([ques_embed[0]])
-            x_val_2 = np.array([ques_embed[1]])
-            x_val = [x_val_1, x_val_2]
-        else:
-            x_val = ques_embed
-        pred = graph.predict(x_val)
-        pre = pt.prereocess_idx(pred[0])
-        ls_nulti = []
-        for ls in pre[0]:
-            if ls[1] >= 0.5:
-                ls_nulti.append(ls)
-        print(pre[0])
-        print(ls_nulti)
 
 if __name__=="__main__":
     # 测试集预测
     pred_tet(path_test=path_valid, rate=1) # sample条件下设为1,否则训练语料可能会很少
 
-    # 可输入 input 预测
-    #pred_input()

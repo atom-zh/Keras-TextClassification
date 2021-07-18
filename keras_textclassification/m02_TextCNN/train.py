@@ -38,7 +38,7 @@ def train(hyper_parameters=None, rate=1.0):
                   'dropout': 0.5,  # 随机失活, 概率
                   'decay_step': 100,  # 学习率衰减step, 每N个step衰减一次
                   'decay_rate': 0.9,  # 学习率衰减系数, 乘法
-                  'epochs': 20,  # 训练最大轮次
+                  'epochs': 200,  # 训练最大轮次
                   'patience': 3, # 早停,2-3就好
                   'lr': 5e-3,  # 学习率,bert取5e-5,其他取1e-3, 对训练会有比较大的影响, 如果准确率一直上不去,可以考虑调这个参数
                   'l2': 1e-9,  # l2正则化
