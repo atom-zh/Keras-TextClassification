@@ -7,14 +7,15 @@
 from keras_textclassification.data_preprocess.text_preprocess import load_json, save_json, txt_read
 from keras_textclassification.conf.path_config import path_model_dir
 from keras_textclassification.conf.path_config import path_train, path_valid, path_label, path_tests, path_category, \
-    path_edata, path_embedding_vector_word2vec_word, path_embedding_random_word, path_embedding_vector_word2vec_word_bin
+    path_edata, path_embedding_vector_word2vec_word, path_embedding_random_word, path_embedding_vector_word2vec_word_bin, \
+    path_embedding_random_char, path_embedding_vector_word2vec_char_bin, path_embedding_vector_word2vec_char, path_embedding_user_dict
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import random
 import jieba
 import json
-import word2vec
+from gensim.models import Word2Vec
 import os
 import re
 
@@ -23,6 +24,8 @@ str_split = '|,|'
 class preprocess_excel_data:
     def __init__(self):
         self.corpus = []
+        self.corpus_labels = []
+        self.corpus_titles = []
 
     def removePunctuation(self, content):
         """
@@ -67,6 +70,18 @@ class preprocess_excel_data:
             return False
         return True
 
+    def gen_jieba_user_dict(self, path):
+        lable_dict = []
+        for lines in self.corpus_labels:
+            for len in lines:
+                lable_dict.append(len)
+        lable_dict = list(set(lable_dict))
+        with open(path, 'w', encoding='utf-8') as f_path:
+            for line in lable_dict:
+                    f_path.write(line + '\n')
+            f_path.close()
+        return lable_dict
+
     def excel2csv(self):
         labels = []
         trains = []
@@ -99,10 +114,10 @@ class preprocess_excel_data:
             label_tmp = re.sub(r'  ', ' ', label_tmp)  # 去除标签里面的双空格
 
             # 将 label 和 title 都加入语料库
-            self.corpus.append(list(label_tmp.split(' ')))
+            self.corpus_labels.append(list(label_tmp.split(' ')))
             # jieba.suggest_freq('十八大', True)    #修改词频，使其不能分离
-            # jieba.load_userdict(file_name)       #添加自定义词典
-            self.corpus.append(list(jieba.cut(cov_title, cut_all=False, HMM=False)))
+            # self.corpus.append(list(jieba.cut(cov_title, cut_all=False, HMM=False)))
+            self.corpus_titles.append(cov_title)
 
             # 处理多标签的情况
             if ' ' in label_tmp:
@@ -115,6 +130,13 @@ class preprocess_excel_data:
             else:
                 labels.append(cov_label)
                 trains.append(cov_label + str_split + cov_title)
+
+        label_dict = self.gen_jieba_user_dict(path_embedding_user_dict)
+        jieba.load_userdict(path_embedding_user_dict)  # 添加自定义词典
+
+        for line in self.corpus_titles:
+            self.corpus.append(list(jieba.cut(line, cut_all=False, HMM=False)))
+        self.corpus.append(label_dict)
 
         # 生成 label 文件
         with open(path_label, 'w', encoding='utf-8') as f_label:
@@ -135,10 +157,10 @@ class preprocess_excel_data:
         for i in range(len(trains)):
             print(trains[i])
             # 拆分训练集、验证集、测试集
-            if i % 7 == 0:
+            if i % 5 == 0:
                 f_valid.write(trains[i] + '\n')
-            elif i % 11 == 0:
-                f_tests.write(trains[i] + '\n')
+            #elif i % 11 == 0:
+            #    f_tests.write(trains[i] + '\n')
             else:
                 f_train.write(trains[i] + '\n')
         f_valid.close()
@@ -153,25 +175,35 @@ class preprocess_excel_data:
         f_edata.close()
 
     def gen_vec(self):
-        # 生成 word2vec 预训练 文件
-        with open(path_embedding_random_word, 'w', encoding='utf-8') as f_vec_bin:
-            for line in self.corpus:
-                line = ' '.join(line)
-                f_vec_bin.write(line + '\n')
-            f_vec_bin.close()
         print(self.corpus)
+        word_list = []
+        char_list = []
+        # 生成 word2vec 预训练 文件
+        for line in self.corpus:
+            for word in line:
+                word_list.append(word)
+                for char in word:
+                    char_list.append(char)
 
-        # 嵌入参数： sg=> 0:CBOW 1:SKip-Gram
-        word2vec.word2vec(path_embedding_random_word, path_embedding_vector_word2vec_word_bin, size=300, verbose=True)
-        print("start to load vec file")
-        model = word2vec.load(path_embedding_vector_word2vec_word_bin)
-        print(model.vocab)
-        with open(path_embedding_vector_word2vec_word, 'w', encoding='utf-8') as f_vec:
-            f_vec.write(str(len(model.vocab)) + ' ' + '300' + '\n')
-            for i in range(len(model.vectors)):
-                word = model.vocab[i]
-                vec = model.vectors[i]
-                vec = ' '.join(str(i) for i in vec)
-                line = str(word) + ' ' + vec + '\n'
-                f_vec.write(line)
-            f_vec.close()
+        word_list = list(set(word_list))
+        char_list = list(set(char_list))
+        with open(path_embedding_random_word, 'w', encoding='utf-8') as f_word_vec_bin:
+            for line in word_list:
+                f_word_vec_bin.write(line + '\n')
+            f_word_vec_bin.close()
+
+        with open(path_embedding_random_char, 'w', encoding='utf-8') as f_char_vec_bin:
+            for line in char_list:
+                f_char_vec_bin.write(line + '\n')
+            f_char_vec_bin.close()
+
+        print("start to gen word vec file")
+        # 嵌入参数： sg=> 0:CBOW 1:SKip-Gram, sentences = word_list
+        model_word = Word2Vec(corpus_file=path_embedding_random_word, size=300, window=5, min_count=1, workers=4)
+        model_word.wv.save_word2vec_format(path_embedding_vector_word2vec_word_bin, binary=True)
+        model_word.wv.save_word2vec_format(path_embedding_vector_word2vec_word, binary=False)
+
+        print("start to gen word vec file")
+        model_word = Word2Vec(corpus_file=path_embedding_random_char, size=300, window=5, min_count=1, workers=4)
+        model_word.wv.save_word2vec_format(path_embedding_vector_word2vec_char_bin, binary=True)
+        model_word.wv.save_word2vec_format(path_embedding_vector_word2vec_char, binary=False)

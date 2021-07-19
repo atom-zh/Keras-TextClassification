@@ -8,7 +8,9 @@
 from keras.layers import Reshape, Concatenate, Conv2D, MaxPool2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Model
+from keras import backend as K
 from keras_textclassification.keras_layers.attention_self import AttentionSelf
+from keras_textclassification.keras_layers.attention_dot import Attention
 from keras_textclassification.base.graph import graph
 
 
@@ -18,6 +20,7 @@ class TextCNNGraph(graph):
             初始化
         :param hyper_parameters: json，超参
         """
+        self.rnn_units = hyper_parameters['model'].get('rnn_units', 256)  # large, small is 300
         super().__init__(hyper_parameters)
 
     def create_model(self, hyper_parameters):
@@ -28,7 +31,16 @@ class TextCNNGraph(graph):
         """
         super().create_model(hyper_parameters)
         embedding = self.word_embedding.output
-        #embedding = AttentionSelf(self.word_embedding.embed_size)(embedding)
+
+        # attention start
+        atten = Attention()(embedding)
+        atten_reshiape = Reshape((self.len_max, self.embed_size, 1))(atten)
+        atten = Conv2D(filters=self.filters_num, kernel_size=(3, self.embed_size), padding='valid',
+                    kernel_initializer='normal', activation='tanh')(atten_reshiape)
+        atten = MaxPool2D(pool_size=(self.len_max - 2, 1), strides=(1, 1), padding='valid')(atten)
+        # attention end
+
+        self.embed_size = K.int_shape(embedding)[2]
         embedding_reshape = Reshape((self.len_max, self.embed_size, 1))(embedding)
         # 提取n-gram特征和最大池化， 一般不用平均池化
         conv_pools = []
@@ -45,6 +57,8 @@ class TextCNNGraph(graph):
                                )(conv)
 
             conv_pools.append(pooled)
+
+        # conv_pools.append(atten) # add attention
         # 拼接
         x = Concatenate(axis=-1)(conv_pools)
         x = Dropout(self.dropout)(x)

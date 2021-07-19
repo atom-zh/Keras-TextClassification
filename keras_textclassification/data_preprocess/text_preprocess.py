@@ -5,9 +5,9 @@
 # @function :data utils of text classification
 
 
-# from keras_textclassification.conf.path_config import path_model_dir
+from keras_textclassification.conf.path_config import path_l2i_i2l
 # path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-# path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+# path_fast_text_model_l2i_i2l = path_l2i_i2l
 from collections import Counter
 from tqdm import tqdm
 import pandas as pd
@@ -201,7 +201,7 @@ class PreprocessText:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
@@ -311,7 +311,7 @@ class PreprocessTextMulti:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
@@ -442,7 +442,7 @@ class PreprocessSim:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
@@ -469,6 +469,7 @@ class PreprocessSim:
             raise RuntimeError("path_fast_text_model_label2index is None")
 
     def preprocess_label_ques_to_idx(self, embedding_type, path, embed, rate=1, shuffle=True):
+        print(path)
         data = pd.read_csv(path)
         ques_1 = data['sentence1'].tolist()
         ques_2 = data['sentence2'].tolist()
@@ -537,7 +538,7 @@ class PreprocessSimCCKS2020baidu:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
@@ -748,7 +749,7 @@ class PreprocessSimConv2019:
     def __init__(self, path_model_dir):
         self.l2i_i2l = None
         self.path_fast_text_model_vocab2index = path_model_dir + 'vocab2index.json'
-        self.path_fast_text_model_l2i_i2l = path_model_dir + 'l2i_i2l.json'
+        self.path_fast_text_model_l2i_i2l = path_l2i_i2l
         if os.path.exists(self.path_fast_text_model_l2i_i2l):
             self.l2i_i2l = load_json(self.path_fast_text_model_l2i_i2l)
 
