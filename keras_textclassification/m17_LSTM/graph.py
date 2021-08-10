@@ -27,7 +27,7 @@ class LSTMGraph(graph):
         self.rnn_units = hyper_parameters['model'].get('rnn_units', 256) # large, small is 300
         super().__init__(hyper_parameters)
 
-    def create_model(self, hyper_parameters):
+    def create_model_bilstm_cnn(self, hyper_parameters):
         """
             构建神经网络，行卷积加池化
         :param hyper_parameters:json,  hyper parameters of network
@@ -52,7 +52,8 @@ class LSTMGraph(graph):
         attention_out = Attention()(embedding_output)
         # 拼接
         x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse, attention_out])
-        #x_feb = Concatenate(axis=2)([x_feb, embedding_output])
+        #x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
+        #x_feb = Concatenate(axis=2)([x_fordwords, x_backwords_reverse])
 
         ####使用多个卷积核##################################################
         x_feb = Dropout(self.dropout)(x_feb)
@@ -76,68 +77,70 @@ class LSTMGraph(graph):
         # 拼接
         x = Concatenate()(conv_pools)
         x = Dropout(self.dropout)(x)
+        #x = Attention()(x)
         x = Flatten()(x)
+
         #########################################################################
         x = Dense(units=128, activation="tanh")(x)
         x = Dropout(self.dropout)(x)
+
         output = Dense(units=self.label, activation=self.activate_classify)(x)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
         self.model.summary(120)
 
-    def create_model_cls(self, hyper_parameters):
+    def create_model_slstm(self, hyper_parameters):
         """
-            构建神经网络, col, 论文中maxpooling使用的是列池化, 不过实验效果似乎不佳，而且训练速度超级慢
+            构建神经网络，行卷积加池化
         :param hyper_parameters:json,  hyper parameters of network
         :return: tensor, moedl
         """
         super().create_model(hyper_parameters)
         embedding_output = self.word_embedding.output
 
-        # 反向
-        x_backwords = LSTM(units=self.rnn_units,
-                                    return_sequences=True,
-                                    kernel_regularizer=regularizers.l2(0.32 * 0.1),
-                                    recurrent_regularizer=regularizers.l2(0.32),
-                                    go_backwards = True)(embedding_output)
-        x_backwords_reverse = Lambda(lambda x: K.reverse(x, axes=1))(x_backwords)
         # 前向
-        x_fordwords = LSTM(units=self.rnn_units,
-                                    return_sequences=True,
-                                    kernel_regularizer=regularizers.l2(0.32 * 0.1),
-                                    recurrent_regularizer=regularizers.l2(0.32),
-                                    go_backwards = False)(embedding_output)
-        # 拼接
-        x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
+        x = LSTM(units=self.rnn_units,
+                           return_sequences=True,
+                           kernel_regularizer=regularizers.l2(0.32 * 0.1),
+                           recurrent_regularizer=regularizers.l2(0.32),
+                           go_backwards=False)(embedding_output)
 
-        ####列池化##################################################
-        x_feb = Dropout(self.dropout)(x_feb)
-        dim_2 = K.int_shape(x_feb)[2]
-        x_feb_reshape = Reshape((dim_2, self.len_max))(x_feb)
-
-        conv_pools = []
-        for filter in self.filters:
-            conv = Conv1D(filters=self.filters_num, # filter=300
-                          kernel_size=filter,
-                          padding='valid',
-                          kernel_initializer='normal',
-                          activation='relu',
-                          )(x_feb_reshape)
-            pooled = MaxPooling1D(padding='valid',
-                                  pool_size=32,
-                                  )(conv)
-            conv_pools.append(pooled)
-        x = Concatenate(axis=1)(conv_pools)
-        # x = MaxPooling1D(padding = 'VALID',)(x_feb_reshape)
         x = Flatten()(x)
-        x = Dropout(self.dropout)(x)
-
-        #########################################################################
-
         output = Dense(units=self.label, activation=self.activate_classify)(x)
         self.model = Model(inputs=self.word_embedding.input, outputs=output)
         self.model.summary(120)
 
+    def create_model_bilstm(self, hyper_parameters):
+        """
+        构建神经网络，行卷积加池化
+        :param hyper_parameters:json,  hyper parameters of network
+        :return: tensor, moedl
+        """
+        super().create_model(hyper_parameters)
+        embedding_output = self.word_embedding.output
+        # 反向
+        x_backwords = LSTM(units=self.rnn_units,
+                            return_sequences=True,
+                            kernel_regularizer=regularizers.l2(0.32 * 0.1),
+                            recurrent_regularizer=regularizers.l2(0.32),
+                            go_backwards=True)(embedding_output)
+        x_backwords_reverse = Lambda(lambda x: K.reverse(x, axes=1))(x_backwords)
+        # 前向
+        x_fordwords = LSTM(units=self.rnn_units,
+                            return_sequences=True,
+                            kernel_regularizer=regularizers.l2(0.32 * 0.1),
+                            recurrent_regularizer=regularizers.l2(0.32),
+                            go_backwards=False)(embedding_output)
 
+        x = Concatenate(axis=2)([x_fordwords, x_backwords_reverse])
+        x = Flatten()(x)
+        output = Dense(units=self.label, activation=self.activate_classify)(x)
+        self.model = Model(inputs=self.word_embedding.input, outputs=output)
+        self.model.summary(120)
+
+    def create_model(self, hyper_parameters):
+        #self.create_model_slstm(hyper_parameters)
+        #self.create_model_bilstm(hyper_parameters)
+        self.create_model_bilstm_cnn(hyper_parameters)
 
 # 卷积的2种方式
 # # 1 github: https://github.com/ShawnyXiao/TextClassification-Keras/tree/master/model/RCNN/rcnn.py

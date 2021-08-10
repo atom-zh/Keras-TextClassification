@@ -97,23 +97,24 @@ def train(hyper_parameters=None, rate=1.0):
     print("耗时:" + str(time.time()-time_start))
 
     # 准确率图形输出
+    # 准确率图形输出
     N = np.arange(0, H.epoch.__len__())
     plt.style.use("ggplot")
     plt.figure(figsize=(12,5))
     plt.subplot(1, 2, 1)
-    plt.plot(N, H.history['acc'], label = 'train_acc')
-    plt.plot(N, H.history['val_acc'], label = 'valid_acc')
     plt.title("Training Accuracy (Multi Labels)")
-    plt.xlabel("Epochs")
+    plt.plot(N, H.history['acc'], 'bo-', label = 'train')
+    plt.plot(N, H.history['val_acc'], 'r^:', label = 'test')
+    plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
     plt.legend()
 
     plt.subplot(1, 2, 2)
-    plt.plot(N, H.history['loss'], label = 'train_loss')
-    plt.plot(N, H.history['val_loss'], label = 'valid_loss')
     plt.title("Training loss (Multi Labels)")
-    plt.xlabel("Epochs")
+    plt.xlabel("Epoch")
     plt.ylabel("Loss")
+    plt.plot(N, H.history['loss'], 'bo-', label = 'train_loss')
+    plt.plot(N, H.history['val_loss'], 'r^:', label = 'test_loss')
     plt.legend()
     plt.savefig(path_root + '/../out/train_TextRCNN')
 

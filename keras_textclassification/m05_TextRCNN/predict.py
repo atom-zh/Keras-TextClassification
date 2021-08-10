@@ -19,7 +19,7 @@ from keras_textclassification.data_preprocess.text_preprocess import PreprocessT
 # 模型图
 from keras_textclassification.m05_TextRCNN.graph import RCNNGraph as Graph
 # 模型评估
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, hamming_loss
 # 计算时间
 import time
 import numpy as np
@@ -66,8 +66,10 @@ def pred_tet(path_hyper_parameter=path_hyper_parameters, path_test=None, rate=1.
     print(target_names)
     # 评估
     report_predict = classification_report(index_y, y_pred, digits=9, target_names=target_names)
-
     print(report_predict)
+
+    h_loss = hamming_loss(index_y, y_pred)
+    print("Hamming Loss = {:.6f}".format(h_loss))
     print("耗时:" + str(time.time() - time_start))
 
 if __name__=="__main__":
