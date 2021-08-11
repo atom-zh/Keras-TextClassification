@@ -16,13 +16,14 @@ sys.path.append(project_path)
 from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters, path_root
 
 # 训练验证数据地址
-from keras_textclassification.conf.path_config import path_train, path_valid, path_tests
+from keras_textclassification.conf.path_config import path_train, path_valid, path_tests, path_out
 
 # 数据转换 excel ->  csv
 from keras_textclassification.data_preprocess.data_excel2csv import preprocess_excel_data as pre_pro
 
 # 数据预处理, 删除文件目录下文件
 from keras_textclassification.data_preprocess.text_preprocess import PreprocessTextMulti, delete_file
+from keras_textclassification.data_preprocess.utils import mkdir
 # 模型图
 from keras_textclassification.m02_TextCNN.graph import TextCNNGraph as Graph
 import matplotlib.pyplot as plt
@@ -116,6 +117,7 @@ def pro_processdata():
     pre = pre_pro() # 实例化
     pre.excel2csv() # 数据预处理， excel文件转为csv， 拆分训练集和验证集
     pre.gen_vec()   # 根据语料库，生成词向量
+    mkdir(path_out)
 
 if __name__=="__main__":
     #pro_processdata() #预处理数据，只需执行一次

@@ -50,6 +50,7 @@ path_tests = path_multi_label_tests
 path_edata = path_root + "/../out/error_data.csv"
 
 # fast_text config
+path_out = path_root + "/../out"
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"
 # 语料地址
