@@ -49,7 +49,7 @@ def txt_read(file_path, encode_type='utf-8'):
         return list_line
 
 
-def txt_write(list_line, file_path, type='w', encode_type='utf-8'):
+def txt_write(list_line: object, file_path: object, type: object = 'w', encode_type: object = 'utf-8') -> object:
     """
       txt写入list文件
     :param listLine:list, list文件，写入要带"\n" 
@@ -114,18 +114,16 @@ def preprocess_label_ques(path):
             x_y.append(line_y+','+line_x+'\n')
     return x_y
 
-
 def save_json(jsons, json_path):
     """
       保存json，
-    :param json_: json 
+    :param json_: json
     :param path: str
     :return: None
     """
     with open(json_path, 'w', encoding='utf-8') as fj:
-        fj.write(json.dumps(jsons, ensure_ascii=False))
+        fj.write(json.dumps(jsons, ensure_ascii=False, sort_keys=True, indent=2))
     fj.close()
-
 
 def load_json(path):
     """
@@ -134,7 +132,7 @@ def load_json(path):
     :return: json
     """
     with open(path, 'r', encoding='utf-8') as fj:
-        model_json = json.loads(fj.readlines()[0])
+        model_json = json.loads(fj.read())
     return model_json
 
 

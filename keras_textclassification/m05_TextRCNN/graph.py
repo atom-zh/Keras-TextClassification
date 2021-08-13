@@ -27,6 +27,7 @@ class RCNNGraph(graph):
             初始化
         :param hyper_parameters: json，超参
         """
+        self.train_mode = hyper_parameters['train_mode']
         self.rnn_type = hyper_parameters['model'].get('rnn_type', 'LSTM')
         self.rnn_units = hyper_parameters['model'].get('rnn_units', 256) # large, small is 300
         super().__init__(hyper_parameters)
@@ -59,10 +60,12 @@ class RCNNGraph(graph):
                                     go_backwards = False)(embedding_output)
 
 
-        attention_out = Attention()(embedding_output) # add attention
-        # 拼接
-        x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse, attention_out])
-        #x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
+        if self.train_mode == "attention":
+            attention_out = Attention()(embedding_output) # add attention
+            x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse, attention_out])
+        else:
+            # 拼接
+            x_feb = Concatenate(axis=2)([x_fordwords, embedding_output, x_backwords_reverse])
 
         ####使用多个卷积核##################################################
         x_feb = Dropout(self.dropout)(x_feb)

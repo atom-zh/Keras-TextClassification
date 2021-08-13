@@ -20,6 +20,7 @@ class TextCNNGraph(graph):
             初始化
         :param hyper_parameters: json，超参
         """
+        self.train_mode = hyper_parameters['train_mode']
         self.rnn_units = hyper_parameters['model'].get('rnn_units', 256)  # large, small is 300
         super().__init__(hyper_parameters)
 
@@ -33,11 +34,12 @@ class TextCNNGraph(graph):
         embedding = self.word_embedding.output
 
         # attention start
-        atten = Attention()(embedding)
-        atten_reshiape = Reshape((self.len_max, self.embed_size, 1))(atten)
-        atten = Conv2D(filters=self.filters_num, kernel_size=(3, self.embed_size), padding='valid',
-                    kernel_initializer='normal', activation='tanh')(atten_reshiape)
-        atten = MaxPool2D(pool_size=(self.len_max - 2, 1), strides=(1, 1), padding='valid')(atten)
+        if self.train_mode == 'attention':
+            atten = Attention()(embedding)
+            atten_reshiape = Reshape((self.len_max, self.embed_size, 1))(atten)
+            atten = Conv2D(filters=self.filters_num, kernel_size=(3, self.embed_size), padding='valid',
+                        kernel_initializer='normal', activation='tanh')(atten_reshiape)
+            atten = MaxPool2D(pool_size=(self.len_max - 2, 1), strides=(1, 1), padding='valid')(atten)
         # attention end
 
         self.embed_size = K.int_shape(embedding)[2]
@@ -58,7 +60,8 @@ class TextCNNGraph(graph):
 
             conv_pools.append(pooled)
 
-        # conv_pools.append(atten) # add attention
+        if self.train_mode == 'attention':
+            conv_pools.append(atten) # add attention
         # 拼接
         x = Concatenate(axis=-1)(conv_pools)
         x = Dropout(self.dropout)(x)
