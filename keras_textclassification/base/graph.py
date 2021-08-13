@@ -5,7 +5,7 @@
 # @function :graph of base
 
 
-from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters, path_root
+from keras_textclassification.conf.path_config import path_model, path_fineture, path_model_dir, path_hyper_parameters, path_out
 from keras_textclassification.data_preprocess.generator_preprocess import PreprocessGenerator, PreprocessSimGenerator
 from keras_textclassification.data_preprocess.text_preprocess import save_json
 from keras_textclassification.keras_layers.keras_lookahead import Lookahead
@@ -154,7 +154,8 @@ class graph:
         if self.trainable:
             self.word_embedding.model.save(self.path_fineture)
         # 保存模型架构图
-        plot_model(self.model, to_file=path_root + '/../out/model.png', show_shapes=True)
+        model_path = path_out + self.hyper_parameters['train_name'] + '_' + self.hyper_parameters['train_mode'] + '/model.png'
+        plot_model(self.model, to_file= model_path, show_shapes=True)
         return ret
 
     def fit_generator(self, embed, rate=1):

@@ -5,10 +5,15 @@
 # @function :file of path
 
 import os
+import pathlib
+import sys
 
 # 项目的根目录
 path_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 path_root = path_root.replace('\\', '/')
+
+path_top = str(pathlib.Path(os.path.abspath(__file__)).parent.parent.parent)
+path_top = path_top.replace('\\', '/')
 
 # path of embedding
 path_embedding_user_dict = path_root + '/data/embeddings/user_dict.txt'
@@ -50,6 +55,8 @@ path_tests = path_multi_label_tests
 path_edata = path_root + "/../out/error_data.csv"
 
 # fast_text config
+path_out = path_top + "/out/"
+
 # 模型目录
 path_model_dir =  path_root + "/data/model/fast_text/"
 # 语料地址
